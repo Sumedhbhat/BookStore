@@ -4,7 +4,6 @@ import {
   createUserWithEmailAndPassword,
   setPersistence,
   updateProfile,
-  browserLocalPersistence,
   getAuth,
   browserSessionPersistence,
 } from "firebase/auth";
@@ -44,7 +43,7 @@ export const signUp = createAsyncThunk(
       email: "",
       userId: "",
     };
-    await setPersistence(auth, browserLocalPersistence).then(async () => {
+    await setPersistence(auth, browserSessionPersistence).then(async () => {
       await createUserWithEmailAndPassword(auth, email, password)
         .then(async () => {
           console.log(auth.currentUser);
