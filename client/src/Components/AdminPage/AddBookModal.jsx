@@ -21,12 +21,16 @@ import {
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { db, storage } from "../../firebase";
 import { setDoc, doc, addDoc, collection } from "firebase/firestore";
+import { useDispatch, useSelector } from "react-redux";
+import { addBook } from "../Store/reducers/books";
 import validator from "validator";
 
 const AddBookModal = ({ isAddOpen, setIsAddOpen, setCount }) => {
+  const dispatch = useDispatch();
   const [error, setError] = useState({});
   const [imageUrl, setimageUrl] = useState(null);
   const [progresspercent, setProgresspercent] = useState(0);
+
   const onClose = () => {
     setIsAddOpen(false);
   };
@@ -69,9 +73,7 @@ const AddBookModal = ({ isAddOpen, setIsAddOpen, setCount }) => {
     }
     console.log(error);
     if (Object.keys(error).length === 0) {
-      await addDoc(collection(db, "books"), values).then(() => {
-        setCount((prev) => prev + 1);
-      });
+      dispatch(addBook(values));
       setIsAddOpen(false);
     }
   };

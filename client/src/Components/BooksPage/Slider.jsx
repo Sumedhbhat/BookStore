@@ -20,16 +20,16 @@ export default ({ books }) => {
     },
     breakpoints: {
       "(min-width: 600px)": {
-        slides: { perView: 4, spacing: 5 },
+        slides: { perView: 2, spacing: 15 },
       },
       "(min-width: 950px)": {
         slides: { perView: 3, spacing: 5 },
       },
       "(min-width: 1200px)": {
-        slides: { perView: 2, spacing: 15 },
+        slides: { perView: 3, spacing: 15 },
       },
       "(min-width: 1600px)": {
-        slides: { perView: 5, spacing: 15 },
+        slides: { perView: 4, spacing: 40 },
       },
     },
   });

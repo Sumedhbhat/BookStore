@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Center, Text } from "@chakra-ui/react";
 import Navbar from "./Components/Navbar/Navbar";
 import BooksPage from "./Components/BooksPage/BooksPage";
 import BooksInfo from "./Components/AdminPage/BooksInfo";
-import { Text } from "@chakra-ui/react";
+import Book from "./Components/Book/Book";
 const App = () => {
   return (
     <Router>
@@ -10,7 +11,15 @@ const App = () => {
       <Routes>
         <Route path='/books' element={<BooksPage />} />
         <Route path='/admin/books' element={<BooksInfo />} />
-        <Route path='*' element={<Text fontSize={"6xl"}>Not Found</Text>} />
+        <Route path='/book' element={<Book />} />
+        <Route
+          path='*'
+          element={
+            <Center>
+              <Text fontSize={"5xl"}>Not Found</Text>
+            </Center>
+          }
+        />
       </Routes>
     </Router>
   );

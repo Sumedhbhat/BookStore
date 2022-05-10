@@ -1,19 +1,8 @@
-import { useEffect, useState, useRef } from "react";
-import { storage, db } from "../../firebase";
-import {
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  onSnapshot,
-  getDocs,
-  deleteDoc,
-} from "firebase/firestore";
+import { useEffect, useState } from "react";
 import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
@@ -25,12 +14,13 @@ import {
 } from "@chakra-ui/react";
 import BookModal from "./EditBookModal";
 import AddBookModal from "./AddBookModal";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchBooks, deleteBook } from "../Store/reducers/books";
 const BooksInfo = () => {
+  const dispatch = useDispatch();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [count, setCount] = useState(0);
-  const btnRef = useRef();
-  var bookArray = [];
+  const count = useSelector((state) => state.books.count);
   const first = {
     Title: "",
     Author: "",
@@ -42,23 +32,10 @@ const BooksInfo = () => {
     ImageUrl: "",
   };
   const [data, setData] = useState(first);
-  const [books, setBooks] = useState([]);
-
-  const getData = async () => {
-    await getDocs(collection(db, "books")).then((res) => {
-      res.forEach((doc) => {
-        if (bookArray.find((book) => book.id === doc.id) === undefined) {
-          const arr = { id: doc.id, ...doc.data() };
-          bookArray.push(arr);
-        }
-      });
-    });
-    setBooks(bookArray);
-  };
+  const books = useSelector((state) => state.books.books);
 
   useEffect(() => {
-    getData();
-    console.log(books);
+    dispatch(fetchBooks());
   }, [count]);
 
   const handleAdd = () => {
@@ -70,22 +47,12 @@ const BooksInfo = () => {
     setIsOpen(true);
   };
   const handleDelete = (id) => {
-    deleteDoc(doc(db, "books", id));
-    setCount((prev) => prev + 1);
+    dispatch(deleteBook(id));
   };
   return (
     <>
-      <BookModal
-        book={data}
-        setIsOpen={setIsOpen}
-        isOpen={isOpen}
-        setCount={setCount}
-      />
-      <AddBookModal
-        setIsAddOpen={setIsAddOpen}
-        isAddOpen={isAddOpen}
-        setCount={setCount}
-      />
+      <BookModal book={data} setIsOpen={setIsOpen} isOpen={isOpen} />
+      <AddBookModal setIsAddOpen={setIsAddOpen} isAddOpen={isAddOpen} />
       <TableContainer p={2}>
         <Table variant={"simple"} overflowY={"scroll"}>
           <TableCaption>All Books</TableCaption>
@@ -116,11 +83,7 @@ const BooksInfo = () => {
                     <Td>{book.Publisher}</Td>
                     <Td>{book.Rating}</Td>
                     <Td>
-                      <Button
-                        size='md'
-                        ref={btnRef}
-                        onClick={(e) => handleClick(e, book)}
-                      >
+                      <Button size='md' onClick={(e) => handleClick(e, book)}>
                         Edit Book Info
                       </Button>
                     </Td>
@@ -138,17 +101,17 @@ const BooksInfo = () => {
               })}
           </Tbody>
         </Table>
-        <Center>
-          <Button
-            variant={"solid"}
-            colorScheme={"blue"}
-            size={"lg"}
-            onClick={handleAdd}
-          >
-            Add Book
-          </Button>
-        </Center>
       </TableContainer>
+      <Center mt={4}>
+        <Button
+          variant={"solid"}
+          colorScheme={"blue"}
+          size={"lg"}
+          onClick={handleAdd}
+        >
+          Add Book
+        </Button>
+      </Center>
     </>
   );
 };

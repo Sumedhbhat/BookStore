@@ -15,12 +15,13 @@ import {
   InputRightAddon,
   CircularProgress,
 } from "@chakra-ui/react";
-import { db } from "../../firebase";
-import { doc, setDoc } from "firebase/firestore";
 import { storage } from "../../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { useDispatch, useSelector } from "react-redux";
+import { updateBook } from "../Store/reducers/books";
 
-const BookModal = ({ setIsOpen, isOpen, book, setCount }) => {
+const BookModal = ({ setIsOpen, isOpen, book }) => {
+  const dispatch = useDispatch();
   const [progresspercent, setProgresspercent] = useState(0);
   const onClose = () => {
     setIsOpen(false);
@@ -42,13 +43,10 @@ const BookModal = ({ setIsOpen, isOpen, book, setCount }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    await setDoc(doc(db, "books", book.id), values, { merge: true }).then(
-      () => {
-        setCount((prev) => prev + 1);
-        setIsOpen(false);
-      }
-    );
+    const id = book.id;
+    dispatch(updateBook({ id, values })).then(() => {
+      setIsOpen(false);
+    });
   };
 
   const handleFile = async (e) => {
@@ -70,7 +68,7 @@ const BookModal = ({ setIsOpen, isOpen, book, setCount }) => {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-          setValues({ ...values, ImageUrl: url });
+          setValues((value) => ({ ...value, ImageUrl: url }));
           console.log(url);
         });
       }

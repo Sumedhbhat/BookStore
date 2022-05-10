@@ -1,29 +1,35 @@
 import { Box, Image, Text, Stack } from "@chakra-ui/react";
-import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const BookCardRegular = ({ book }) => {
+  const navigate = useNavigate();
   const { ImageUrl, Title, Author, Language, Price, Pages, Publisher, Rating } =
     book;
   return (
     <Box
-      border={"1px solid black"}
+      boxShadow={"10px 10px 10px #ccc"}
       maxW={"sm"}
-      minH={"lg"}
+      height={"lg"}
       borderRadius={"20px"}
       p={2}
+      onClick={() => navigate(`/book?bookId=${book.id}`)}
     >
-      <Stack spacing={2}>
+      <Stack>
         <Image
           src={ImageUrl}
           borderRadius={"20px 20px 0px 0px"}
-          height='100%'
+          height='330px'
         />
-        <Text fontSize='xl' as='b'>
-          {Title}
-        </Text>
-        <Text fontSize='lg'>{Author}</Text>
-        <Text fontSize='lg'>{Price}</Text>
-        <Text fontSize='lg'>{Rating}</Text>
+        <Box>
+          <Stack spacing={2}>
+            <Text fontSize='xl' as='b' isTruncated>
+              {Title}
+            </Text>
+            <Text fontSize='lg'>{Author}</Text>
+            <Text fontSize='lg'>{Price}</Text>
+            <Text fontSize='lg'>{Rating}</Text>
+          </Stack>
+        </Box>
       </Stack>
     </Box>
   );

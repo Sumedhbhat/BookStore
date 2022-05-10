@@ -1,29 +1,16 @@
-import {
-  Container,
-  Heading,
-  Box,
-  Spinner,
-  Skeleton,
-  SkeletonText,
-  Grid,
-} from "@chakra-ui/react";
-import {
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  onSnapshot,
-  getDocs,
-} from "firebase/firestore";
+import { Container, Heading, Box, Spinner, SimpleGrid } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { db } from "../../firebase";
-import BookCard from "./BookCard";
+import { motion } from "framer-motion";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import Slider from "./Slider";
+import { fetchBooks } from "../Store/reducers/books";
 import BookCardRegular from "./BookCardRegular";
 
 const BooksPage = () => {
+  const dispatch = useDispatch();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
 
@@ -51,31 +38,21 @@ const BooksPage = () => {
     },
   });
 
-  const [books, setBooks] = useState([]);
+  const books = useSelector((state) => state.books.books);
 
   useEffect(() => {
-    const getData = async () => {
-      const querySnapshot = await getDocs(collection(db, "books"));
-      console.log(querySnapshot);
-      const booksArray = [];
-      querySnapshot.forEach((doc) => {
-        if (doc !== undefined || doc !== null) {
-          const arr = { id: doc.id, ...doc.data() };
-          if (booksArray.find((book) => book.id === arr.id) === undefined) {
-            booksArray.push(arr);
-          }
-        }
-      });
-      setBooks(booksArray);
-    };
-    getData();
+    dispatch(fetchBooks());
   }, []);
   return (
     <>
-      <Container maxW='container.lg'>
+      <Container maxW='1600px'>
         <Heading>Recent Additions</Heading>
         <Box py={4} />
-        {books.length === 0 ? <Spinner size='xl' /> : <Slider books={books} />}
+        {books.length === 0 ? (
+          <Spinner size='xl' />
+        ) : (
+          <Slider books={books.slice(-5)} />
+        )}
         <Box py={4} />
         <Heading>All Books</Heading>
         <Box py={4} />
@@ -83,11 +60,17 @@ const BooksPage = () => {
           <Spinner size='xl' />
         ) : (
           <>
-            <Grid container>
+            <SimpleGrid columns={[1, 2, 3, 4, 5, 6]} gap={6}>
               {books.map((book) => (
-                <BookCardRegular book={book} key={book.id} />
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  key={book.id}
+                >
+                  <BookCardRegular book={book} />
+                </motion.div>
               ))}
-            </Grid>
+            </SimpleGrid>
           </>
         )}
       </Container>
