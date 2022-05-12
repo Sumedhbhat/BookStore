@@ -5,6 +5,7 @@ import BooksPage from "./Components/BooksPage/BooksPage";
 import BooksInfo from "./Components/AdminPage/BooksInfo";
 import Book from "./Components/Book/Book";
 import LoginPage from "./Components/LoginPage/LoginPage";
+import ThankYouPage from "./Components/ThankYouPage/ThankYouPage";
 const App = () => {
   return (
     <Router>
@@ -14,6 +15,7 @@ const App = () => {
         <Route path='/admin/books' element={<BooksInfo />} />
         <Route path='/book' element={<Book />} />
         <Route path='/login' element={<LoginPage />} />
+        <Route path='/thankyou' element={<ThankYouPage />} />
         <Route
           path='*'
           element={

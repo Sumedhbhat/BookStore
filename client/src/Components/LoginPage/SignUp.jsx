@@ -1,43 +1,46 @@
-import { Button, Center, Input, Stack } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { signUp } from "../Store/reducers/user";
-import { useNavigate } from "react-router-dom";
-import { getAuth } from "firebase/auth";
-import { app } from "../../firebase";
+import { useEffect, useState } from "react";
+import { auth } from "../../firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { Stack, Input, Button, Center, useToast } from "@chakra-ui/react";
 import validator from "validator";
-
-const auth = getAuth(app);
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
+  const toast = useToast();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const errors = useSelector((state) => state.user.error);
-  const userId = useSelector((state) => state.user.userId);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    console.log(errors);
-    if (auth.currentUser !== null) {
-      console.log(auth.currentUser);
-      navigate("/books");
-    }
-  }, [userId]);
-
-  const handleSignUp = () => {
-    if (
-      validator.isEmail(email) &&
-      !validator.isEmpty(name) &&
-      !validator.isEmpty(password)
-    ) {
-      dispatch(signUp({ email, password, name })).catch((err) =>
-        setError(err.message)
-      );
-    } else {
-      setError("Please fill all the fields with proper Values");
+  const handleSignUp = async () => {
+    setError("");
+    if (validator.isEmail(email)) {
+      if (password.length > 6) {
+        if (name.length > 2) {
+          await createUserWithEmailAndPassword(auth, email, password)
+            .then(async () => {
+              await updateProfile(auth.currentUser, { displayName: name }).then(
+                () => {
+                  toast({
+                    title: "Account created.",
+                    description:
+                      "We've created your account for you. Sign In to your Account.",
+                    status: "success",
+                    duration: 9000,
+                    isClosable: true,
+                  });
+                  setEmail("");
+                  setPassword("");
+                  setName("");
+                }
+              );
+            })
+            .catch((err) => {
+              setError(err.message);
+            });
+        }
+      }
     }
   };
   return (
@@ -64,9 +67,9 @@ const SignUp = () => {
         <Button onClick={handleSignUp} colorScheme='blue'>
           Sign Up
         </Button>
-        {errors && (
+        {error !== "" && (
           <Center>
-            <p>{errors}</p>
+            <p>{error}</p>
           </Center>
         )}
       </Stack>
