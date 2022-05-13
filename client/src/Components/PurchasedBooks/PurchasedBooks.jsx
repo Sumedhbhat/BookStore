@@ -5,29 +5,30 @@ import {
   Heading,
   Center,
   Box,
+  Spacer,
+  Flex,
 } from "@chakra-ui/react";
 import { getDoc, doc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect } from "react";
-import { db, app } from "../../firebase";
+import { db, auth } from "../../firebase";
+import { useDispatch } from "react-redux";
 
 const PurchasedBooks = () => {
-  let auth = getAuth(app);
   const [count, setCount] = useState(0);
   const [books, setBooks] = useState([]);
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(auth.currentUser);
 
   useEffect(() => {
-    setUser(auth.currentUser);
-  }, [auth]);
-
-  useEffect(() => {
-    if (user !== null) {
-      getPurchasedBooks();
-    }
-    console.log(user);
-  }, [user]);
+    onAuthStateChanged(auth, (data) => {
+      console.log(data);
+      setUser(data);
+      if (data) {
+        setLoggedIn(true);
+      }
+    });
+  }, []);
 
   const getPurchasedBooks = async () => {
     if (!loggedIn) {
@@ -60,7 +61,6 @@ const PurchasedBooks = () => {
 
   useEffect(() => {
     console.log(auth.currentUser);
-    setUser(auth.currentUser);
     if (user) {
       setLoggedIn(true);
     }
@@ -70,8 +70,7 @@ const PurchasedBooks = () => {
   }, [user, auth]);
 
   useEffect(() => {
-    auth = getAuth(app);
-    console.log(books, user, auth.currentUser, loggedIn, app);
+    console.log(books, user, auth.currentUser, loggedIn);
   });
   return (
     <>
@@ -89,21 +88,33 @@ const PurchasedBooks = () => {
         {books &&
           books.map((book) => (
             <Box
+              mx='auto'
               key={book.id}
               style={{
                 backgroundImage: `url(${book.ImageUrl})`,
                 backgroundPosition: "center",
                 backgroundSize: "cover",
                 backgroundRepeat: "no-repeat",
+                backgroundBlendMode: "multiply",
               }}
               height='500px'
+              width='300px'
             >
-              <Stack>
-                <Text>{book.title}</Text>
-                <Text>{book.author}</Text>
-                <Text>{book.genre}</Text>
-                <Text isTruncated>{book.description}</Text>
-              </Stack>
+              <Box background={"rgba(0,0,0,0.8)"} height='inherit'>
+                <Flex
+                  flexDirection={"column"}
+                  justifyContent='flex-end'
+                  opacity={1}
+                  mt='auto'
+                >
+                  <Spacer />
+                  <Heading color={"white"}>{book.Title}</Heading>
+                  <Text>{book.Author}</Text>
+                  <Text isTruncated noOfLines={3} flexWrap>
+                    {book.Description}
+                  </Text>
+                </Flex>
+              </Box>
             </Box>
           ))}
       </SimpleGrid>
