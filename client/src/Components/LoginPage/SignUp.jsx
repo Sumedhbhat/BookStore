@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { auth } from "../../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { db } from "../../firebase";
+import { doc, addDoc, updateDoc, setDoc } from "firebase/firestore";
 import { Stack, Input, Button, Center, useToast } from "@chakra-ui/react";
 import validator from "validator";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +23,12 @@ const SignUp = () => {
           await createUserWithEmailAndPassword(auth, email, password)
             .then(async () => {
               await updateProfile(auth.currentUser, { displayName: name }).then(
-                () => {
+                async () => {
+                  await setDoc(doc(db, "users", auth.currentUser.uid), {
+                    name: name,
+                    email: email,
+                    purchasedBooks: [],
+                  });
                   toast({
                     title: "Account created.",
                     description:

@@ -19,6 +19,9 @@ const Navbar = () => {
         <Image src={LogoTransparent} alt='' height={"100%"} />
       </Box>
       <Spacer />
+      <Button colorScheme={"blue"} onClick={() => navigate("/purchasedBooks")}>
+        PurchasedBooks
+      </Button>
       <Button colorScheme={"red"} onClick={handleClick}>
         Sign Out
       </Button>

@@ -7,6 +7,7 @@ import {
   getAuth,
   setPersistence,
   browserSessionPersistence,
+  browserLocalPersistence,
 } from "firebase/auth";
 import validator from "validator";
 
@@ -40,7 +41,7 @@ const SignIn = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validator.isEmail(email) && !validator.isEmpty(password)) {
-      setPersistence(auth, browserSessionPersistence)
+      setPersistence(auth, browserLocalPersistence)
         .then(async () => {
           return await signInWithEmailAndPassword(auth, email, password).then(
             () => {

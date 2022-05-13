@@ -6,6 +6,7 @@ import BooksInfo from "./Components/AdminPage/BooksInfo";
 import Book from "./Components/Book/Book";
 import LoginPage from "./Components/LoginPage/LoginPage";
 import ThankYouPage from "./Components/ThankYouPage/ThankYouPage";
+import PurchasedBooks from "./Components/PurchasedBooks/PurchasedBooks";
 const App = () => {
   return (
     <Router>
@@ -16,6 +17,7 @@ const App = () => {
         <Route path='/book' element={<Book />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/thankyou' element={<ThankYouPage />} />
+        <Route path='/purchasedBooks' element={<PurchasedBooks />} />
         <Route
           path='*'
           element={
