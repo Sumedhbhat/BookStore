@@ -32,6 +32,7 @@ const Book = () => {
   const params = new URLSearchParams(location.search);
   const [bookId, setBookId] = useState(params.get("bookId").toString());
   const [loggedIn, setLoggedIn] = useState(auth.currentUser !== null);
+  const [bought, setBought] = useState(false);
   useEffect(() => {
     if (auth.currentUser !== null) {
       setLoggedIn(true);
@@ -40,16 +41,21 @@ const Book = () => {
     }
   }, [auth.currentUser]);
 
-  console.log(bookId);
   const onClose = () => {
     setIsOpen(false);
   };
   const books = useSelector((state) => state.books.books);
   useEffect(() => {
-    dispatch(fetchBooks());
-    setBook(books.find((book) => book.id === bookId));
-  }, [books, bookId]);
-  console.log(books);
+    dispatch(fetchBooks()).then(() => {
+      setBook(books.find((book) => book.id === bookId));
+      getDoc(doc(db, "users", auth.currentUser.uid)).then((result) => {
+        const purchasedBooks = result.data().purchasedBooks;
+        if (purchasedBooks.includes(bookId)) {
+          setBought(true);
+        }
+      });
+    });
+  });
 
   const handlePurchase = async () => {
     if (loggedIn) {
@@ -88,9 +94,15 @@ const Book = () => {
               </Center>
             </Box>
           </Stack>
-          <Button colorScheme={"blue"} size='lg' onClick={handlePurchase}>
-            Purchase Book
-          </Button>
+          {!bought ? (
+            <Button colorScheme={"blue"} size='lg' onClick={handlePurchase}>
+              Purchase Book
+            </Button>
+          ) : (
+            <Button colorScheme={"green"} size='lg'>
+              Book Purchased
+            </Button>
+          )}
         </Stack>
         <AlertDialog isOpen={isOpen} onClose={onClose}>
           <AlertDialogOverlay>

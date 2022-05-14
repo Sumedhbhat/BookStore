@@ -22,7 +22,7 @@ const ThankYouPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate("/books");
+    navigate("/");
   };
 
   const params = new URLSearchParams(location.search);
@@ -47,7 +47,7 @@ const ThankYouPage = () => {
     {
       return (
         <Container maxW={"container.lg"}>
-          <Stack spacing={16} py={40}>
+          <Stack spacing={16} py={10}>
             <Text align={"center"} fontSize={"4xl"}>
               You have successfully purchased the book
             </Text>

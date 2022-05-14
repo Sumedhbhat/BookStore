@@ -13,8 +13,11 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { db, auth } from "../../firebase";
 import { useDispatch } from "react-redux";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const PurchasedBooks = () => {
+  const navigate = useNavigate();
   const [count, setCount] = useState(0);
   const [books, setBooks] = useState([]);
   const [user, setUser] = useState(null);
@@ -45,7 +48,7 @@ const PurchasedBooks = () => {
             if (
               books.find((book) => book.id === purchasedBooks[i]) === undefined
             ) {
-              newBooks.push(book.data());
+              newBooks.push({ ...book.data(), id: book.id });
               console.log(newBooks);
             }
             console.log(purchasedBooks);
@@ -60,13 +63,14 @@ const PurchasedBooks = () => {
   };
 
   useEffect(() => {
-    console.log(auth.currentUser);
+    console.log(user);
     if (user) {
       setLoggedIn(true);
     }
     if (loggedIn) {
       getPurchasedBooks();
     }
+    console.log(books);
   }, [user, auth]);
 
   useEffect(() => {
@@ -75,9 +79,7 @@ const PurchasedBooks = () => {
   return (
     <>
       <Center>
-        <Heading>
-          Books Purchased by {auth.currentUser && auth.currentUser.displayName}
-        </Heading>
+        <Heading>Books Purchased by {user && user.displayName}</Heading>
       </Center>
       <SimpleGrid
         p={10}
@@ -87,35 +89,50 @@ const PurchasedBooks = () => {
       >
         {books &&
           books.map((book) => (
-            <Box
-              mx='auto'
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               key={book.id}
-              style={{
-                backgroundImage: `url(${book.ImageUrl})`,
-                backgroundPosition: "center",
-                backgroundSize: "cover",
-                backgroundRepeat: "no-repeat",
-                backgroundBlendMode: "multiply",
-              }}
-              height='500px'
-              width='300px'
             >
-              <Box background={"rgba(0,0,0,0.8)"} height='inherit'>
-                <Flex
-                  flexDirection={"column"}
-                  justifyContent='flex-end'
-                  opacity={1}
-                  mt='auto'
+              <Box
+                mx='auto'
+                style={{
+                  backgroundImage: `url(${book.ImageUrl})`,
+                  backgroundPosition: "center",
+                  backgroundSize: "cover",
+                  backgroundRepeat: "no-repeat",
+                  backgroundBlendMode: "multiply",
+                }}
+                borderRadius={"20px"}
+                height='500px'
+                width='300px'
+                onClick={() => {
+                  navigate(`/book?bookId=${book.id}`);
+                }}
+              >
+                <Box
+                  background={"rgba(0,0,0,0.65)"}
+                  height='inherit'
+                  borderRadius={"20px"}
                 >
-                  <Spacer />
-                  <Heading color={"white"}>{book.Title}</Heading>
-                  <Text>{book.Author}</Text>
-                  <Text isTruncated noOfLines={3} flexWrap>
-                    {book.Description}
-                  </Text>
-                </Flex>
+                  <Flex
+                    height={"inherit"}
+                    flexDirection={"column"}
+                    justifyContent='flex-end'
+                    opacity={1}
+                    placeItems='bottom'
+                    p={3}
+                  >
+                    <Box flex='1' />
+                    <Heading color={"white"}>{book.Title}</Heading>
+                    <Text color={"white"}>{book.Author}</Text>
+                    <Text noOfLines={3} color={"white"}>
+                      {book.Description}
+                    </Text>
+                  </Flex>
+                </Box>
               </Box>
-            </Box>
+            </motion.div>
           ))}
       </SimpleGrid>
     </>

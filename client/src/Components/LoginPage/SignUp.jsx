@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
-import { auth } from "../../firebase";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { db } from "../../firebase";
+import { auth, db } from "../../firebase";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  onAuthStateChanged,
+  signOut,
+} from "firebase/auth";
 import { doc, addDoc, updateDoc, setDoc } from "firebase/firestore";
 import { Stack, Input, Button, Center, useToast } from "@chakra-ui/react";
 import validator from "validator";
@@ -28,6 +32,7 @@ const SignUp = () => {
                     name: name,
                     email: email,
                     purchasedBooks: [],
+                    role: "user",
                   });
                   toast({
                     title: "Account created.",
@@ -37,6 +42,7 @@ const SignUp = () => {
                     duration: 9000,
                     isClosable: true,
                   });
+                  signOut(auth);
                   setEmail("");
                   setPassword("");
                   setName("");

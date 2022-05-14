@@ -8,26 +8,23 @@ import {
   signOut,
 } from "firebase/auth";
 
-export const signInUser = createAsyncThunk(
-  "user/signIn",
-  async (payload, thunkAPI) => {
-    const auth = getAuth(app);
-    const { email, password } = payload;
-    const user = {};
-    await signInWithEmailAndPassword(email, password)
-      .then(() => {
-        if (auth.currentUser !== null || auth.currentUser !== undefined) {
-          user.email = auth.currentUser.email;
-        }
-      })
-      .catch((error) => {
-        console.log(error.code);
-        console.log(error.message);
-        user.error = error.message;
-      });
-    return user;
-  }
-);
+export const signInUser = createAsyncThunk("user/signIn", async (payload) => {
+  const auth = getAuth(app);
+  const { email, password } = payload;
+  const user = {};
+  await signInWithEmailAndPassword(email, password)
+    .then(() => {
+      if (auth.currentUser !== null || auth.currentUser !== undefined) {
+        user.email = auth.currentUser.email;
+      }
+    })
+    .catch((error) => {
+      console.log(error.code);
+      console.log(error.message);
+      user.error = error.message;
+    });
+  return user;
+});
 
 const userSlice = createSlice({
   name: "user",

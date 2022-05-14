@@ -9,16 +9,16 @@ const BookCardRegular = ({ book }) => {
     <Box
       boxShadow={"10px 10px 10px #ccc"}
       maxW={"sm"}
-      height={"lg"}
+      height={"fit-content"}
       borderRadius={"20px"}
       p={2}
       onClick={() => navigate(`/book?bookId=${book.id}`)}
     >
       <Stack>
         <Image
+          width={"100%"}
           src={ImageUrl}
           borderRadius={"20px 20px 0px 0px"}
-          height='330px'
         />
         <Box>
           <Stack spacing={2}>

@@ -39,7 +39,6 @@ const BookModal = ({ setIsOpen, isOpen, book }) => {
       delete newValues[name];
       setValues(newValues);
     }
-    console.log(values);
   };
 
   const handleSubmit = async (e) => {

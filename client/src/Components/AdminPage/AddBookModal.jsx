@@ -41,7 +41,6 @@ const AddBookModal = ({ isAddOpen, setIsAddOpen, setCount }) => {
     } else {
       setValues({ ...values, [event.target.name]: event.target.value });
     }
-    console.log(values);
   };
 
   const handleSubmit = async (event) => {
@@ -71,7 +70,6 @@ const AddBookModal = ({ isAddOpen, setIsAddOpen, setCount }) => {
     if (validator.isEmpty(values.ImageUrl)) {
       setError((prev) => ({ ...prev, image: "Image is required" }));
     }
-    console.log(error);
     if (Object.keys(error).length === 0) {
       dispatch(addBook(values));
       setIsAddOpen(false);
@@ -92,13 +90,10 @@ const AddBookModal = ({ isAddOpen, setIsAddOpen, setCount }) => {
         );
         setProgresspercent(progress);
       },
-      (error) => {
-        console.log(error);
-      },
+      (error) => {},
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((url) => {
           setValues({ ...values, ImageUrl: url });
-          console.log(url);
         });
       }
     );

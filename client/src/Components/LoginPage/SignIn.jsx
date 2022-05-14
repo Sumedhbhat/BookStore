@@ -8,6 +8,7 @@ import {
   setPersistence,
   browserSessionPersistence,
   browserLocalPersistence,
+  onAuthStateChanged,
 } from "firebase/auth";
 import validator from "validator";
 
@@ -19,10 +20,15 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [count, setCount] = useState(0);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (auth.currentUser !== null) {
-      console.log(auth.currentUser);
+    onAuthStateChanged(auth, (data) => {
+      console.log(data);
+      setUser(data);
+    });
+    if (user !== null) {
+      console.log(user);
       toast({
         title: "Sign In Successful",
         description: "You have Successfully signed In to your account",
@@ -33,7 +39,7 @@ const SignIn = () => {
         position: "top",
       });
       setTimeout(() => {
-        navigate("/books");
+        navigate("/");
       }, 1000);
     }
   }, [auth, count]);
@@ -41,7 +47,7 @@ const SignIn = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validator.isEmail(email) && !validator.isEmpty(password)) {
-      setPersistence(auth, browserLocalPersistence)
+      setPersistence(auth, browserSessionPersistence)
         .then(async () => {
           return await signInWithEmailAndPassword(auth, email, password).then(
             () => {
