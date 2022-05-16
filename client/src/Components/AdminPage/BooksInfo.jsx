@@ -53,8 +53,18 @@ const BooksInfo = () => {
     <>
       <BookModal book={data} setIsOpen={setIsOpen} isOpen={isOpen} />
       <AddBookModal setIsAddOpen={setIsAddOpen} isAddOpen={isAddOpen} />
-      <TableContainer p={2}>
-        <Table variant={"simple"} overflowY={"scroll"}>
+      <Center my={4}>
+        <Button
+          variant={"solid"}
+          colorScheme={"blue"}
+          size={"lg"}
+          onClick={handleAdd}
+        >
+          Add Book
+        </Button>
+      </Center>
+      <TableContainer p={2} maxWidth={"100vw"} width={"100%"}>
+        <Table variant={"striped"}>
           <TableCaption>All Books</TableCaption>
           <Thead>
             <Tr>
@@ -102,16 +112,6 @@ const BooksInfo = () => {
           </Tbody>
         </Table>
       </TableContainer>
-      <Center mt={4}>
-        <Button
-          variant={"solid"}
-          colorScheme={"blue"}
-          size={"lg"}
-          onClick={handleAdd}
-        >
-          Add Book
-        </Button>
-      </Center>
     </>
   );
 };
