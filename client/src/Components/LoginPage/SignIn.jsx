@@ -39,7 +39,7 @@ const SignIn = () => {
         position: "top",
       });
       setTimeout(() => {
-        navigate("/");
+        navigate("/dashboard");
       }, 1000);
     }
   }, [auth, count]);
