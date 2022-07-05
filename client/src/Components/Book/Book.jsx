@@ -56,10 +56,12 @@ const Book = ({ user }) => {
   useEffect(() => {
     setBookId(params.get("bookId").toString());
     console.log(bookId);
+    console.log(user);
     dispatch(fetchBooks()).then(() => {
       setBook(books.find((book) => book.id === bookId));
       getDoc(doc(db, "users", user.uid)).then((result) => {
         const purchasedBooks = result.data().purchasedBooks;
+        console.log(result);
         if (purchasedBooks.includes(bookId)) {
           setBought(true);
         }

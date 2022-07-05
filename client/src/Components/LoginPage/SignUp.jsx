@@ -42,10 +42,10 @@ const SignUp = () => {
                     duration: 9000,
                     isClosable: true,
                   });
-                  signOut(auth);
                   setEmail("");
                   setPassword("");
                   setName("");
+                  navigate("/");
                 }
               );
             })

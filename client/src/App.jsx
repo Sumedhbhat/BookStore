@@ -23,7 +23,7 @@ import SearchPage from "./Components/SearchPage/SearchPage";
 
 const App = () => {
   const [user, setUser] = useState("");
-  const [admin, setAdmin] = useState(false);
+  const [admin, setAdmin] = useState(null);
   useEffect(() => {
     onAuthStateChanged(auth, (data) => {
       console.log(data);
@@ -36,109 +36,122 @@ const App = () => {
     });
   }, []);
 
+  // if (user === "") {
+  //   return (
+  //     <Routes>
+  //       <Route
+  //         path='*'
+  //         element={
+  //           <Center>
+  //             <Spinner
+  //               thickness='4px'
+  //               speed='0.65s'
+  //               emptyColor='gray.200'
+  //               color='blue.500'
+  //               size='xl'
+  //             />
+  //           </Center>
+  //         }
+  //       />
+  //     </Routes>
+  //   );
+  // } else {
+  //   return (
+  //     <>
+  //       <Navbar user={user} admin={admin} />
+  //       <Routes>
+  //         <Route path='/' element={<Landing />} />
+  //         <Route
+  //           path='/dashboard'
+  //           element={admin ? <BooksInfo /> : <BooksPage />}
+  //         />
+  //         <Route path='book' element={<Book />} />
+  //         <Route path='/thankyou' element={<ThankYouPage />} />
+  //         <Route path='/purchasedBooks' element={<PurchasedBooks />} />
+  //         <Route path='/login' element={<LoginPage />} />
+  //         <Route path='/search' element={<SearchPage />} />
+  //         <Route path='*' element={<Text>404</Text>} />
+  //       </Routes>
+  //     </>
+  //   );
+  // }
   if (user === "") {
+    console.log(user);
     return (
       <Center>
-        <Spinner
-          thickness='4px'
-          speed='0.65s'
-          emptyColor='gray.200'
-          color='blue.500'
-          size='xl'
-        />
+        <Spinner size={"xl"} />;
       </Center>
     );
   } else {
-    return (
-      <>
-        <Navbar user={user} admin={admin} />
-        <Routes>
-          <Route path='/' element={<Landing />} />
-          <Route
-            path='/dashboard'
-            element={admin ? <BooksInfo /> : <BooksPage />}
-          />
-          <Route path='book' element={<Book />} />
-          <Route path='/thankyou' element={<ThankYouPage />} />
-          <Route path='/purchasedBooks' element={<PurchasedBooks />} />
-          <Route path='/login' element={<LoginPage />} />
-          <Route path='/search' element={<SearchPage />} />
-          <Route path='*' element={<Text>404</Text>} />
-        </Routes>
-      </>
-    );
+    if (user === null) {
+      console.log(user);
+      return (
+        <>
+          <Navbar admin={admin} user={user} />
+          <Routes>
+            <Route path='/' element={<Landing />} />
+            <Route path='/login' element={<LoginPage user={user} />} />
+            <Route
+              path='*'
+              element={
+                <Center>
+                  <Text fontSize={"5xl"}>Not Found</Text>
+                </Center>
+              }
+            />
+          </Routes>
+        </>
+      );
+    } else if (admin === true) {
+      console.log(user);
+      return (
+        <>
+          <Navbar admin={admin} user={user} />
+          <Routes>
+            <Route path='/' element={<BooksInfo user={user} />} />
+            <Route path='/login' element={<LoginPage user={user} />} />
+            <Route
+              path='*'
+              element={
+                <Center>
+                  <Text fontSize={"5xl"}>Not Found</Text>
+                </Center>
+              }
+            />
+          </Routes>
+        </>
+      );
+    } else if (admin === false) {
+      console.log(user);
+      return (
+        <>
+          <Navbar admin={admin} user={user} />
+          <Routes>
+            <Route path='/' exact element={<BooksPage user={user} />} />
+            <Route path='/book' exact element={<Book user={user} />} />
+            <Route path='/login' element={<LoginPage user={user} />} />
+            <Route path='/thankyou' element={<ThankYouPage />} />
+            <Route path='/purchasedBooks' element={<PurchasedBooks />} />
+            <Route path='/search' element={<SearchPage />} />
+            <Route
+              path='*'
+              element={
+                <Center>
+                  <Text fontSize={"5xl"}>Not Found</Text>
+                </Center>
+              }
+            />
+          </Routes>
+        </>
+      );
+    } else {
+      return (
+        <Center>
+          <Spinner size={"xl"} />;
+        </Center>
+      );
+    }
   }
-  // if (user === "") {
-  //   console.log(user);
-  //   return (
-  //     <Center>
-  //       <Spinner size={"xl"} />;
-  //     </Center>
-  //   );
-  // } else {
-  //   if (user === null) {
-  //     console.log(user);
-  //     return (
-  //       <AnimatePresence exitBeforeEnter>
-  //         <Navbar admin={admin} user={user} />
-  //         <Routes>
-  //           <Route path='/' element={<Landing />} />
-  //           <Route path='/login' element={<LoginPage />} />
-  //           <Route
-  //             path='*'
-  //             element={
-  //               <Center>
-  //                 <Text fontSize={"5xl"}>Not Found</Text>
-  //               </Center>
-  //             }
-  //           />
-  //         </Routes>
-  //       </AnimatePresence>
-  //     );
-  //   } else if (admin) {
-  //     console.log(user);
-  //     return (
-  //       <AnimatePresence exitBeforeEnter>
-  //         <Navbar admin={admin} user={user} />
-  //         <Routes>
-  //           <Route path='/' element={<BooksInfo user={user} />} />
-  //           <Route path='/login' element={<LoginPage user={user} />} />
-  //           <Route
-  //             path='*'
-  //             element={
-  //               <Center>
-  //                 <Text fontSize={"5xl"}>Not Found</Text>
-  //               </Center>
-  //             }
-  //           />
-  //         </Routes>
-  //       </AnimatePresence>
-  //     );
-  //   } else {
-  //     console.log(user);
-  //     return (
-  //       <AnimatePresence exitBeforeEnter>
-  //         <Navbar admin={admin} user={user} />
-  //         <Routes>
-  //           <Route path='/' exact element={<BooksPage user={user} />} />
-  //           <Route path='/book' exact element={<Book user={user} />} />
-  //           <Route path='/login' element={<LoginPage user={user} />} />
-  //           <Route path='/thankyou' element={<ThankYouPage />} />
-  //           <Route path='/purchasedBooks' element={<PurchasedBooks />} />
-  //           <Route path='/search' element={<SearchPage />} />
-  //           <Route
-  //             path='*'
-  //             element={
-  //               <Center>
-  //                 <Text fontSize={"5xl"}>Not Found</Text>
-  //               </Center>
-  //             }
-  //           />
-  //         </Routes>
-  //       </AnimatePresence>
-  //     );
-  //   }
-  // }
 };
 
 export default App;

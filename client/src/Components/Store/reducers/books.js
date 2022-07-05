@@ -82,6 +82,7 @@ const booksSlice = createSlice({
       state.loading = true;
     });
     builder.addCase(addBook.rejected, (state) => {
+      state.count += 1;
       state.loading = false;
       state.error = true;
     });
@@ -94,6 +95,7 @@ const booksSlice = createSlice({
       state.loading = true;
     });
     builder.addCase(deleteBook.rejected, (state) => {
+      state.count += 1;
       state.loading = false;
       state.error = true;
     });
@@ -106,6 +108,7 @@ const booksSlice = createSlice({
       state.loading = true;
     });
     builder.addCase(updateBook.rejected, (state) => {
+      state.count += 1;
       state.loading = false;
       state.error = true;
     });
