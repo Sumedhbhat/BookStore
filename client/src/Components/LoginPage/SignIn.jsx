@@ -47,7 +47,7 @@ const SignIn = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validator.isEmail(email) && !validator.isEmpty(password)) {
-      setPersistence(auth, browserLocalPersistence)
+      setPersistence(auth, browserSessionPersistence)
         .then(async () => {
           return await signInWithEmailAndPassword(auth, email, password).then(
             () => {

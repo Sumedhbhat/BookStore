@@ -36,8 +36,7 @@ const SignUp = () => {
                   });
                   toast({
                     title: "Account created.",
-                    description:
-                      "We've created your account for you. Sign In to your Account.",
+                    description: "We've created your account for you.",
                     status: "success",
                     duration: 9000,
                     isClosable: true,

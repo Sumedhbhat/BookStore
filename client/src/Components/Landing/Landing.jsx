@@ -9,6 +9,10 @@ import {
 } from "@chakra-ui/react";
 import background from "./assets/background.jpg";
 import { ImBooks } from "react-icons/im";
+import { GrSecure } from "react-icons/gr";
+import { CgProfile } from "react-icons/cg";
+import { MdOutlineLibraryBooks } from "react-icons/md";
+import { GiBookshelf } from "react-icons/gi";
 
 const Landing = () => {
   return (
@@ -61,7 +65,7 @@ const Landing = () => {
           >
             <Box borderRadius={"20px"} p={4} mx='auto'>
               <Flex mx={"auto"} justifyContent='center'>
-                <ImBooks size={200} />
+                <GiBookshelf size={200} />
               </Flex>
               <Text fontSize='xl' textAlign={"center"}>
                 A curated Collection of Books
@@ -69,18 +73,18 @@ const Landing = () => {
             </Box>
             <Box borderRadius={"20px"} p={4} mx='auto'>
               <Flex mx={"auto"} justifyContent='center'>
-                <ImBooks size={200} />
+                <GrSecure size={190} />
               </Flex>
               <Text fontSize='xl' textAlign={"center"}>
-                A curated Collection of Books
+                Secure Authentication System
               </Text>
             </Box>
             <Box borderRadius={"20px"} p={4} mx='auto'>
               <Flex mx={"auto"} justifyContent='center'>
-                <ImBooks size={200} />
+                <CgProfile size={200} />
               </Flex>
               <Text fontSize='xl' textAlign={"center"}>
-                A curated Collection of Books
+                Personalized
               </Text>
             </Box>
           </SimpleGrid>
