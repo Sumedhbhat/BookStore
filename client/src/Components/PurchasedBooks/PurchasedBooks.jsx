@@ -81,6 +81,11 @@ const PurchasedBooks = () => {
       <Center>
         <Heading>Books Purchased by {user && user.displayName}</Heading>
       </Center>
+      {books.length === 0 && (
+        <Center>
+          <Text fontSize={"xl"}>You have not purchased any books</Text>
+        </Center>
+      )}
       <SimpleGrid
         p={10}
         columns={[1, 1, 2, 3, 4]}
@@ -95,7 +100,7 @@ const PurchasedBooks = () => {
               key={book.id}
             >
               <Box
-                mx='auto'
+                mx="auto"
                 style={{
                   backgroundImage: `url(${book.ImageUrl})`,
                   backgroundPosition: "center",
@@ -104,26 +109,26 @@ const PurchasedBooks = () => {
                   backgroundBlendMode: "multiply",
                 }}
                 borderRadius={"20px"}
-                height='500px'
-                width='300px'
+                height="500px"
+                width="300px"
                 onClick={() => {
                   navigate(`/book?bookId=${book.id}`);
                 }}
               >
                 <Box
                   background={"rgba(0,0,0,0.65)"}
-                  height='inherit'
+                  height="inherit"
                   borderRadius={"20px"}
                 >
                   <Flex
                     height={"inherit"}
                     flexDirection={"column"}
-                    justifyContent='flex-end'
+                    justifyContent="flex-end"
                     opacity={1}
-                    placeItems='bottom'
+                    placeItems="bottom"
                     p={3}
                   >
-                    <Box flex='1' />
+                    <Box flex="1" />
                     <Heading color={"white"}>{book.Title}</Heading>
                     <Text color={"white"}>{book.Author}</Text>
                     <Text noOfLines={3} color={"white"}>
