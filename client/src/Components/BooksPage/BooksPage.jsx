@@ -45,11 +45,11 @@ const BooksPage = () => {
   }, []);
   return (
     <>
-      <Container maxW='1600px'>
+      <Container maxW="1600px">
         <Heading>Recent Additions</Heading>
         <Box py={4} />
         {books.length === 0 ? (
-          <Spinner size='xl' />
+          <Spinner size="xl" />
         ) : (
           <Slider books={books.slice(-5)} />
         )}
@@ -57,7 +57,7 @@ const BooksPage = () => {
         <Heading>All Books</Heading>
         <Box py={4} />
         {books.length === 0 ? (
-          <Spinner size='xl' />
+          <Spinner size="xl" />
         ) : (
           <>
             <SimpleGrid columns={[1, 2, 3, 4, 5, 6]} gap={6}>

@@ -33,6 +33,7 @@ const AddBookModal = ({ isAddOpen, setIsAddOpen, setCount }) => {
   const [progresspercent, setProgresspercent] = useState(0);
   const [progresspercentbook, setProgresspercentbook] = useState(0);
   const [adminEmail, setAdminEmail] = useState(null);
+  const [values, setValues] = useState({ purchasedCount: 0 });
 
   const onClose = () => {
     setIsAddOpen(false);
@@ -56,11 +57,7 @@ const AddBookModal = ({ isAddOpen, setIsAddOpen, setCount }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setValues((prev) => ({
-      ...prev,
-      purchasedCount: 0,
-      purchasedCustomers: [],
-    }));
+
     setError({});
     if (validator.isEmpty(values.Title)) {
       setError((prev) => ({ ...prev, title: "Title is required" }));
@@ -137,8 +134,6 @@ const AddBookModal = ({ isAddOpen, setIsAddOpen, setCount }) => {
       }
     );
   };
-
-  const [values, setValues] = useState({});
 
   return (
     <Modal size={"lg"} isOpen={isAddOpen} onClose={onClose}>

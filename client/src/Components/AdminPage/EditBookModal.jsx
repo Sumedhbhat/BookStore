@@ -38,7 +38,6 @@ const BookModal = ({ setIsOpen, isOpen, book }) => {
       setValues((prev) => ({
         ...prev,
         adminEmail: data.email,
-        purchasedCount: 0,
       }));
     });
   }, []);
