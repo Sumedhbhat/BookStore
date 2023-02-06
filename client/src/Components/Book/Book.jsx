@@ -20,6 +20,7 @@ import {
 import { auth, db } from "../../firebase";
 import { useNavigate } from "react-router-dom";
 import { updateDoc, doc, getDoc } from "firebase/firestore";
+import { getDownloadURL, getStorage, ref } from "firebase/storage";
 import { onAuthStateChanged } from "firebase/auth";
 import { fetchBooks } from "../Store/reducers/books";
 
@@ -34,7 +35,9 @@ const Book = ({ user }) => {
   const [bookId, setBookId] = useState(params.get("bookId").toString());
   const [loggedIn, setLoggedIn] = useState(user !== null);
   const [bought, setBought] = useState(false);
+  const [downloadURL, setDownloadURL] = useState(null);
   const loading = useSelector((state) => state.books.loading);
+  const storage = getStorage();
 
   // useEffect(() => {
   //   onAuthStateChanged(auth, (data) => {
@@ -73,40 +76,59 @@ const Book = ({ user }) => {
     if (loggedIn) {
       console.log(user.uid);
       const result = await getDoc(doc(db, "users", user.uid));
+      const bookData = await getDoc(doc(db, "books", bookId));
       console.log(result.data().purchasedBooks);
       await updateDoc(doc(db, "users", user.uid), {
         purchasedBooks: [...result.data().purchasedBooks, bookId],
+      });
+      await updateDoc(doc(db, "books", bookId), {
+        purchasedCount: bookData.data().purchasedCount + 1,
       });
       navigate(`/thankyou?bookId=${bookId}`);
     } else {
       setIsOpen(true);
     }
   };
+
+  const handleDownloadBook = () => {
+    if (book !== undefined) {
+      const bookReference = ref(storage, book.BookURL);
+      getDownloadURL(bookReference)
+        .then((url) => {
+          setDownloadURL(url);
+          console.log(url);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
   if (user === "") {
     return <Spinner size={"xl"} />;
   } else {
     if (loading === true) {
       return (
         <Center>
-          <Spinner size='xl' />
+          <Spinner size="xl" />
         </Center>
       );
     } else {
       if (book !== undefined) {
         return (
           <>
-            <Stack p={10} spacing={25} maxW={"1600px"} mx='auto'>
+            <Stack p={10} spacing={25} maxW={"1600px"} mx="auto">
               <Stack
                 direction={["column", "column", "column", "row"]}
                 spacing={10}
               >
-                <Flex alignItems='center' flex='0.3' justifyContent={"center"}>
+                <Flex alignItems="center" flex="0.3" justifyContent={"center"}>
                   <Image
                     src={book.ImageUrl}
                     width={["100%", "80%", "40%", "100%"]}
                   />
                 </Flex>
-                <Box flex='0.6'>
+                <Box flex="0.6">
                   <Text fontSize={"5xl"}>{book.Title}</Text>
                   <Text fontSize={"xl"}>{book.Author}</Text>
                   <Text fontSize={"lg"}>Rating: {book.Rating}</Text>
@@ -114,9 +136,9 @@ const Book = ({ user }) => {
                   <Center>
                     <Text
                       fontSize={"3xl"}
-                      align='center'
-                      as='b'
-                      color='purple.800'
+                      align="center"
+                      as="b"
+                      color="purple.800"
                     >
                       Price: {book.Price}
                     </Text>
@@ -124,19 +146,36 @@ const Book = ({ user }) => {
                 </Box>
               </Stack>
               {!bought ? (
-                <Button colorScheme={"blue"} size='lg' onClick={handlePurchase}>
+                <Button colorScheme={"blue"} size="lg" onClick={handlePurchase}>
                   Purchase Book
                 </Button>
               ) : (
-                <Button colorScheme={"green"} size='lg'>
-                  Book Purchased
-                </Button>
+                <>
+                  <Button colorScheme={"green"} size="lg">
+                    Book Purchased
+                  </Button>
+                  {downloadURL === null ? (
+                    <Button
+                      colorScheme={"blue"}
+                      size={"lg"}
+                      onClick={handleDownloadBook}
+                    >
+                      Get Download Link
+                    </Button>
+                  ) : (
+                    <Button colorScheme={"blue"} size={"lg"}>
+                      <a href={downloadURL} target="_blank">
+                        Download Book
+                      </a>
+                    </Button>
+                  )}
+                </>
               )}
             </Stack>
             <AlertDialog isOpen={isOpen} onClose={onClose}>
               <AlertDialogOverlay>
                 <AlertDialogContent>
-                  <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
                     Sign In to continue
                   </AlertDialogHeader>
 
@@ -147,7 +186,7 @@ const Book = ({ user }) => {
                   <AlertDialogFooter>
                     <Button onClick={onClose}>Cancel</Button>
                     <Button
-                      colorScheme='blue'
+                      colorScheme="blue"
                       onClick={() => {
                         navigate("/login");
                       }}
@@ -164,7 +203,7 @@ const Book = ({ user }) => {
       } else {
         return (
           <Center>
-            <Text fontSize={"5xl"} color='gray.500'>
+            <Text fontSize={"5xl"} color="gray.500">
               No book found
             </Text>
           </Center>

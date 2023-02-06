@@ -12,10 +12,13 @@ import {
   Button,
   Center,
 } from "@chakra-ui/react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "../../firebase";
 import BookModal from "./EditBookModal";
 import AddBookModal from "./AddBookModal";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBooks, deleteBook } from "../Store/reducers/books";
+
 const BooksInfo = () => {
   const dispatch = useDispatch();
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -32,7 +35,15 @@ const BooksInfo = () => {
     ImageUrl: "",
   };
   const [data, setData] = useState(first);
+  const [adminEmail, setAdminEmail] = useState(null);
   const books = useSelector((state) => state.books.books);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (data) => {
+      console.log(data.email);
+      setAdminEmail(data.email);
+    });
+  }, [books]);
 
   useEffect(() => {
     dispatch(fetchBooks());
@@ -75,6 +86,7 @@ const BooksInfo = () => {
               <Th>Pages</Th>
               <Th>Publisher</Th>
               <Th>Rating</Th>
+              <Th>Purchased Count</Th>
               <Th>Edit</Th>
               <Th>Delete</Th>
             </Tr>
@@ -82,33 +94,42 @@ const BooksInfo = () => {
           <Tbody>
             {books.length === 0 && <Spinner size={"xl"} />}
             {books.length !== 0 &&
-              books.map((book, index) => {
-                return (
-                  <Tr key={index}>
-                    <Td>{book.Title}</Td>
-                    <Td>{book.Author}</Td>
-                    <Td>{book.Language}</Td>
-                    <Td>{book.Price}</Td>
-                    <Td>{book.Pages}</Td>
-                    <Td>{book.Publisher}</Td>
-                    <Td>{book.Rating}</Td>
-                    <Td>
-                      <Button size='md' onClick={(e) => handleClick(e, book)}>
-                        Edit Book Info
-                      </Button>
-                    </Td>
-                    <Td>
-                      <Button
-                        size={"md"}
-                        colorScheme='red'
-                        onClick={() => handleDelete(book.id)}
-                      >
-                        Delete
-                      </Button>
-                    </Td>
-                  </Tr>
-                );
-              })}
+              books
+                .filter((book) => {
+                  if (adminEmail === null) {
+                    return true;
+                  } else {
+                    return book.adminEmail === adminEmail;
+                  }
+                })
+                .map((book, index) => {
+                  return (
+                    <Tr key={index}>
+                      <Td>{book.Title}</Td>
+                      <Td>{book.Author}</Td>
+                      <Td>{book.Language}</Td>
+                      <Td>{book.Price}</Td>
+                      <Td>{book.Pages}</Td>
+                      <Td>{book.Publisher}</Td>
+                      <Td>{book.Rating}</Td>
+                      <Td>{book.purchasedCount}</Td>
+                      <Td>
+                        <Button size="md" onClick={(e) => handleClick(e, book)}>
+                          Edit Book Info
+                        </Button>
+                      </Td>
+                      <Td>
+                        <Button
+                          size={"md"}
+                          colorScheme="red"
+                          onClick={() => handleDelete(book.id)}
+                        >
+                          Delete
+                        </Button>
+                      </Td>
+                    </Tr>
+                  );
+                })}
           </Tbody>
         </Table>
       </TableContainer>

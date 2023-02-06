@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -19,13 +19,30 @@ import { storage } from "../../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { useDispatch, useSelector } from "react-redux";
 import { updateBook } from "../Store/reducers/books";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "../../firebase";
 
 const BookModal = ({ setIsOpen, isOpen, book }) => {
   const dispatch = useDispatch();
   const [progresspercent, setProgresspercent] = useState(0);
+  const [progresspercentbook, setProgresspercentbook] = useState(0);
   const onClose = () => {
     setIsOpen(false);
   };
+  const [adminEmail, setAdminEmail] = useState(null);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (data) => {
+      console.log(data.email);
+      setAdminEmail(data.email);
+      setValues((prev) => ({
+        ...prev,
+        adminEmail: data.email,
+        purchasedCount: 0,
+      }));
+    });
+  }, []);
+
   const [values, setValues] = useState({});
   const handleChange = (e) => {
     var name = e.target.name;
@@ -43,6 +60,7 @@ const BookModal = ({ setIsOpen, isOpen, book }) => {
 
   const handleSubmit = async (e) => {
     const id = book.id;
+    console.log(values);
     dispatch(updateBook({ id, values })).then(() => {
       setIsOpen(false);
     });
@@ -70,6 +88,34 @@ const BookModal = ({ setIsOpen, isOpen, book }) => {
           setValues((value) => ({ ...value, ImageUrl: url }));
           console.log(url);
         });
+        setProgresspercent(0);
+      }
+    );
+  };
+
+  const handleBookFile = async (e) => {
+    const file = e.target?.files[0];
+    if (!file) return;
+    const storageRef = ref(storage, `books/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        setProgresspercentbook(progress);
+      },
+      (error) => {},
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+          setValues((prev) => ({
+            ...prev,
+            BookURL: url,
+            BookFileName: file.name,
+          }));
+        });
       }
     );
   };
@@ -83,84 +129,100 @@ const BookModal = ({ setIsOpen, isOpen, book }) => {
           <ModalBody>
             <Stack spacing={2}>
               <InputGroup>
-                <InputLeftAddon children='Title' />
+                <InputLeftAddon children="Title" />
                 <Input
                   type={"string"}
                   placeholder={book.Title}
-                  name='Title'
+                  name="Title"
                   onChange={handleChange}
                 />
               </InputGroup>
               <InputGroup>
-                <InputLeftAddon children='Author' />
+                <InputLeftAddon children="Author" />
                 <Input
                   type={"string"}
                   placeholder={book.Author}
-                  name='Author'
+                  name="Author"
                   onChange={handleChange}
                 />
               </InputGroup>
               <InputGroup>
-                <InputLeftAddon children='Language' />
+                <InputLeftAddon children="Language" />
                 <Input
                   type={"string"}
                   placeholder={book.Language}
-                  name='Language'
+                  name="Language"
                   onChange={handleChange}
                 />
               </InputGroup>
               <InputGroup>
-                <InputLeftAddon children='Price' />
+                <InputLeftAddon children="Price" />
                 <Input
                   type={"string"}
                   placeholder={book.Price}
-                  name='Price'
+                  name="Price"
                   onChange={handleChange}
                 />
               </InputGroup>
               <InputGroup>
-                <InputLeftAddon children='Pages' />
+                <InputLeftAddon children="Pages" />
                 <Input
                   type={"string"}
                   placeholder={book.Pages}
-                  name='Pages'
+                  name="Pages"
                   onChange={handleChange}
                 />
               </InputGroup>
               <InputGroup>
-                <InputLeftAddon children='Publisher' />
+                <InputLeftAddon children="Publisher" />
                 <Input
                   type={"string"}
                   placeholder={book.Publisher}
-                  name='Publisher'
+                  name="Publisher"
                   onChange={handleChange}
                 />
               </InputGroup>
               <InputGroup>
-                <InputLeftAddon children='Rating' />
+                <InputLeftAddon children="Rating" />
                 <Input
                   type={"string"}
                   placeholder={book.Rating}
-                  name='Rating'
+                  name="Rating"
                   onChange={handleChange}
                 />
               </InputGroup>
               <InputGroup>
-                <InputLeftAddon children='ImageUrl' />
-                <Input type={"file"} name='ImageUrl' onChange={handleFile} />
+                <InputLeftAddon children="ImageUrl" />
+                <Input type={"file"} name="ImageUrl" onChange={handleFile} />
                 <InputRightAddon
                   children={
                     <CircularProgress value={progresspercent} size={"25px"} />
                   }
                 />
               </InputGroup>
+              <InputGroup>
+                <InputLeftAddon children="BookFile" />
+                <Input
+                  type={"file"}
+                  name="BookFile"
+                  onChange={handleBookFile}
+                />
+                <InputRightAddon
+                  children={
+                    <CircularProgress
+                      value={progresspercentbook}
+                      size={"25px"}
+                    />
+                  }
+                />
+              </InputGroup>
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <Button variant='ghost' onClick={handleSubmit}>
+            <Button variant="ghost" onClick={handleSubmit}>
               Update
             </Button>
-            <Button colorScheme='blue' mr={3} onClick={onClose}>
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
               Close
             </Button>
           </ModalFooter>
